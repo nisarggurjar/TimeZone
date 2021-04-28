@@ -1,5 +1,10 @@
 {% extends 'base.html' %} {% load static %} {% block body %}
 <main>
+  {% if error %}
+  <script>
+    alert(' Username or password is incorrect');
+  </script>
+  {% endif %}
   <div class="slider-area">
     <div class="single-slider slider-height2 d-flex align-items-center">
       <div class="container">
@@ -42,7 +47,7 @@
                 method="post"
                 novalidate="novalidate"
               >
-              {% csrf_token %}
+                {% csrf_token %}
                 <div class="col-md-12 form-group p_star">
                   <input
                     type="text"
@@ -65,8 +70,11 @@
                 </div>
                 <div class="col-md-12 form-group">
                   <div class="creat_account d-flex align-items-center">
-                    <input type="checkbox" id="f-option" name="selector" />
-                    <label for="f-option">Remember me</label>
+                    {% if error %}
+                    <label for="f-option" style="color: red"
+                      >Invalid Username or password</label
+                    >
+                    {% endif %}
                   </div>
                   <button type="submit" value="submit" class="btn_3">
                     log in
