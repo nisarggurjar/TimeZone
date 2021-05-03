@@ -106,45 +106,21 @@
         </div>
       </div>
       <div class="row">
+        {% for i in latest_watch %}
         <div class="col-xl-4 col-lg-4 col-md-6 col-sm-6">
           <div class="single-new-pro mb-30 text-center">
             <div class="product-img">
-              <img src="{% static 'img/gallery/new_product1.png' %}" alt="" />
+              <img src="{{ i.img1.url }}" height="400" alt="" />
             </div>
             <div class="product-caption">
               <h3>
-                <a href="product_details.html">Thermo Ball Etip Gloves</a>
+                <a href="product_details.html">{{ i.title }}</a>
               </h3>
-              <span>$ 45,743</span>
+              <span>&#8377; {{ i.price }}</span>
             </div>
           </div>
         </div>
-        <div class="col-xl-4 col-lg-4 col-md-6 col-sm-6">
-          <div class="single-new-pro mb-30 text-center">
-            <div class="product-img">
-              <img src="{% static 'img/gallery/new_product2.png' %}" alt="" />
-            </div>
-            <div class="product-caption">
-              <h3>
-                <a href="product_details.html">Thermo Ball Etip Gloves</a>
-              </h3>
-              <span>$ 45,743</span>
-            </div>
-          </div>
-        </div>
-        <div class="col-xl-4 col-lg-4 col-md-6 col-sm-6">
-          <div class="single-new-pro mb-30 text-center">
-            <div class="product-img">
-              <img src="{% static 'img/gallery/new_product3.png' %}" alt="" />
-            </div>
-            <div class="product-caption">
-              <h3>
-                <a href="product_details.html">Thermo Ball Etip Gloves</a>
-              </h3>
-              <span>$ 45,743</span>
-            </div>
-          </div>
-        </div>
+        {% endfor %}
       </div>
     </div>
   </section>
@@ -168,9 +144,11 @@
         <div class="col-xl-4 col-lg-4 col-md-6 col-sm-6">
           <div class="single-popular-items mb-50 text-center">
             <div class="popular-img">
-              <img src="{{ watch.img1.url }}" height="600" width="35" alt="" />
+              <img src="{{ watch.img1.url }}" height="450" width="20" alt="" />
               <div class="img-cap">
-                <span>Add to cart</span>
+                <a href="{% url 'addcart' watch.id %}"
+                  ><span>Add to cart</span></a
+                >
               </div>
               <div class="favorit-items">
                 <span class="flaticon-heart"></span>

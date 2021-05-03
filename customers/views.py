@@ -3,10 +3,12 @@ from django.http import HttpResponse
 from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.models import User 
 from managment.models import Watch
+from .models import AddToCart
 
 def Home(request):
     watches = Watch.objects.all()
-    d = {'watches':watches}
+    latest_watch = watches[0:3]
+    d = {'watches':watches, 'latest_watch':latest_watch}
     return render(request, 'index.html', d)
 
 def Login(request):
@@ -29,3 +31,22 @@ def Login(request):
 def Logout(request):
     logout(request)
     return redirect('home')
+
+def addToCart(request, Wid):
+    wth = Watch.objects.filter(id = Wid).first()
+    usr = request.user
+    AddToCart.objects.create(user = usr, watch = wth, qty = 1)
+    return redirect('home')
+
+def Cart(request):
+    products = AddToCart.objects.filter(user = request.user)
+    total = 0
+    for product in products:
+        total = total + product.watch.price
+        
+    d = {"total":total, "products":products}
+    return render(request, 'cart.html', d)
+
+
+
+
