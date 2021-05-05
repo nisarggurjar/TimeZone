@@ -33,19 +33,24 @@ def Logout(request):
     return redirect('home')
 
 def addToCart(request, Wid):
+    if not request.user.is_authenticated:
+        return redirect('login')
     wth = Watch.objects.filter(id = Wid).first()
     usr = request.user
     AddToCart.objects.create(user = usr, watch = wth, qty = 1)
     return redirect('home')
 
 def Cart(request):
-    products = AddToCart.objects.filter(user = request.user)
-    total = 0
-    for product in products:
-        total = total + product.watch.price
-        
-    d = {"total":total, "products":products}
-    return render(request, 'cart.html', d)
+    if request.user.is_authenticated:
+        products = AddToCart.objects.filter(user = request.user)
+        total = 0
+        for product in products:
+            total = total + product.watch.price
+
+        d = {"total":total, "products":products}
+        return render(request, 'cart.html', d)
+    else:
+        return redirect('home')
 
 
 
