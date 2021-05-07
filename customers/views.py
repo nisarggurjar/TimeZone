@@ -4,6 +4,12 @@ from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.models import User 
 from managment.models import Watch
 from .models import AddToCart
+from django.conf import settings
+from django.core.mail import EmailMultiAlternatives
+from django.template.loader import get_template
+from managment.models import Payment_ids
+import requests
+import json
 
 def Home(request):
     watches = Watch.objects.all()
@@ -61,7 +67,7 @@ def Cart(request):
 
 def SignUp(request):
     errorUN = False
-    errorP = True
+    errorP = False
     if request.method == 'POST':
         n = request.POST['name']
         un = request.POST['username']
@@ -76,7 +82,28 @@ def SignUp(request):
             errorP = True
         else:
             User.objects.create_user(username = un, password = pwd1, email = e, first_name = n, is_staff = False)
+            sub = "Registered with TimeZone"
+            data = {'name':n, 'email':e, 'username':un}
+            from_email = settings.EMAIL_HOST_USER
+            html = get_template('mail.html').render(data)
+            msg = EmailMultiAlternatives(sub, '', from_email, [e])
+            msg.attach_alternative(html, 'text/html')
+            msg.send()
             usr = authenticate(username = un, password = pwd1)
             login(request, usr)
             return redirect('home')
-    return render(request, 'signup.html')
+    return render(request, 'signup.html', {'errorP': errorP, 'errorUN':errorUN})
+
+headers = {
+    'X-Api-Key': 'api',
+    'X-Api-Token': 'api-token'
+}
+
+def Payment(request):
+    products = AddToCart.objects.filter(user = request.user)
+    total = 0
+    for product in products:
+        total = total + product.watch.price
+
+    mob = ''
+    

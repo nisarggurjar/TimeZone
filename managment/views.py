@@ -13,3 +13,6 @@ def Shop(request):
 
     d = {"categories":categories, "watches":watches}
     return render(request, 'shop.html',d)
+
+
+    
