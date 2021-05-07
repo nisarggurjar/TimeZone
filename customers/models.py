@@ -8,4 +8,4 @@ class AddToCart(models.Model):
     qty = models.IntegerField(null=True, blank=True, default=1)
 
     def __str__(self):
-        return self.user.username
+        return self.user.username +' ---- '+self.watch.title

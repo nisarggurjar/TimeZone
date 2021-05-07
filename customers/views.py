@@ -41,12 +41,17 @@ def addToCart(request, Wid):
     return redirect('home')
 
 def Cart(request):
+    if request.method == 'POST':
+        _qty = request.POST['_qty']
+        _id = request.POST['id']
+        s = AddToCart.objects.filter(id=_id).update(qty = _qty)
+        print("Updated", s)
+        return redirect('cart')
     if request.user.is_authenticated:
         products = AddToCart.objects.filter(user = request.user)
         total = 0
         for product in products:
             total = total + product.watch.price
-
         d = {"total":total, "products":products}
         return render(request, 'cart.html', d)
     else:
@@ -54,4 +59,24 @@ def Cart(request):
 
 
 
+def SignUp(request):
+    errorUN = False
+    errorP = True
+    if request.method == 'POST':
+        n = request.POST['name']
+        un = request.POST['username']
+        e = request.POST['email']
+        pwd1 = request.POST['pwd1']
+        pwd2 = request.POST['pwd2']
 
+        check = User.objects.filter(username= un)
+        if check:
+            errorUN = True
+        elif pwd1 != pwd2:
+            errorP = True
+        else:
+            User.objects.create_user(username = un, password = pwd1, email = e, first_name = n, is_staff = False)
+            usr = authenticate(username = un, password = pwd1)
+            login(request, usr)
+            return redirect('home')
+    return render(request, 'signup.html')
