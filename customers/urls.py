@@ -6,5 +6,7 @@ urlpatterns = [
     path('logout/', Logout, name='logout'),
     path('AddToCart/<int:Wid>', addToCart, name='addcart'),
     path('cart/', Cart, name='cart'),
-    path('signup/', SignUp, name='signup')
+    path('signup/', SignUp, name='signup'),
+    path('Checkout/', Payment, name='payment'),
+    path('Payment_check/', Payment_Check),
 ]

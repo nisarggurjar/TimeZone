@@ -1,0 +1,65 @@
+{% extends "base2.html" %} {% block body %} {% load static %}
+
+<h1 style="color: red; text-align: center">Edit Watches</h1>
+
+<table class="table">
+  <thead class="thead-dark">
+    <tr>
+      <th scope="col">Watch Title</th>
+      <th scope="col">Delete</th>
+      <th scope="col">Edit</th>
+    </tr>
+  </thead>
+  <tbody>
+    {% for i in watches %}
+    <tr>
+      <td>{{i.title}}</td>
+      <td>
+        <form action="" method="post">
+          {% csrf_token %}
+          <button
+            type="submit"
+            name="delete"
+            value="{{i.id}}"
+            class="genric-btn danger-border radius"
+          >
+            Delete
+          </button>
+        </form>
+      </td>
+      <td>
+        <form action="" method="post">
+          {% csrf_token %}
+          <a href="{% url 'ecat' i.id %}"
+            class="genric-btn info-border radius"
+          >
+            Edit
+          </a>
+        </form>
+      </td>
+    </tr>
+    {% endfor %}
+  </tbody>
+</table>
+<h1 style="color: red; text-align: center">Add Category</h1>
+<div class="row">
+  <div class="col-md-3"></div>
+  <div class="col-md-6">
+    <form action="" class="form form-control" method="post">
+      {% csrf_token %}
+      <input
+        class="form-control"
+        placeholder="Enter Category Name"
+        type="text"
+        name="CategoryName"
+      />
+      <br /><br />
+      <button name="add" class="genric-btn info-border radius" type="submit">
+        Add Category
+      </button>
+    </form>
+    <div class="col-md-3"></div>
+  </div>
+</div>
+
+{% endblock %}

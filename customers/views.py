@@ -8,10 +8,13 @@ from django.conf import settings
 from django.core.mail import EmailMultiAlternatives
 from django.template.loader import get_template
 from managment.models import Payment_ids
+from customers.models import UserDetails
 import requests
 import json
 
 def Home(request):
+    if request.user.is_staff:
+        return render(request, 'index2.html')
     watches = Watch.objects.all()
     latest_watch = watches[0:3]
     d = {'watches':watches, 'latest_watch':latest_watch}
@@ -94,16 +97,50 @@ def SignUp(request):
             return redirect('home')
     return render(request, 'signup.html', {'errorP': errorP, 'errorUN':errorUN})
 
-headers = {
-    'X-Api-Key': 'api',
-    'X-Api-Token': 'api-token'
-}
+headers = {"X-Api-Key": "Your API Key",
+           "X-Auth-Token": "Your Auth Token"}
 
 def Payment(request):
     products = AddToCart.objects.filter(user = request.user)
     total = 0
     for product in products:
         total = total + product.watch.price
+    purp = "Payment for Watches"
+    mob = UserDetails.objects.filter(user = request.user).first().mobile
+    payload = {
+        "purpose":purp,
+        "amount":total,
+        "buyer_name":str(request.user.first_name),
+        "email":str(request.user.email),
+        "phone":mob,
+        "send_email":True,
+        "send_sms":True,
+        "redirect_url":"http://127.0.0.1:8000/customers/Payment_check/"
+    }
+    response = requests.post("https://www.instamojo.com/api/1.1/payment-requests/", data=payload,headers=headers)
+    print(response)
+    y = response.text
+    d = json.loads(y)
+    a = d['payment_request']['longurl']
+    i = d['payment_request']['id']
+    Payment_ids.objects.create(ids = i,user = request.user)
+    return redirect(a)
 
-    mob = ''
-    
+
+def Payment_Check(request):
+    pay = False
+    i = Payment_ids.objects.filter(user = request.user).first()
+    ii = i.ids
+    response = requests.get("https://www.instamojo.com/api/1.1/payment-requests/"+str(ii)+'/',
+                            headers=headers)
+    y = response.text
+    b = json.loads(y)
+    print(b)
+    status = b['payment_request']['status']
+    if status=="Completed":
+        pay = True
+        AddToCart.objects.filter(user = request.user).delete()
+        print('Payment Succesfull')
+        return HttpResponse('Payment Succesfully done')
+    else:
+        return HttpResponse('Payment Declined')
